@@ -1,11 +1,13 @@
 const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
+const jwt = require('jsonwebtoken');
+const secretKey = process.env.SECRET_KEY;
 
 const signUp = async (req, res) => {
     try {
         if (await checkEmailInUse(req.body.email))
             return res.send({ message: "Email is already in use." });
-        
+
         const hashedPassword = await bcrypt.hash(req.body.password, 8);
 
         const user = new userModel({
@@ -21,11 +23,32 @@ const signUp = async (req, res) => {
     }
 }
 
+const logIn = async (req, res) => {
+    try {
+        const user = await userModel.findOne({ email: req.body.email });
+        if (!user)
+            return res.send({ message: "User not found" });
+
+        const checkPassword = await bcrypt.compare(req.body.password, user.password);
+        if (!checkPassword)
+            return res.send({ message: "Incorrect Password" });
+        const token = generateAuthToken(user._id);
+        res.send({ token: `Bearer ${token}` });
+    } catch (e) {
+        res.send({ message: e.message });
+    }
+}
+
 const checkEmailInUse = async (email) => {
     const user = await userModel.findOne({ email });
     return user ? true : false;
 }
 
+const generateAuthToken = (userId) => {
+    const token = jwt.sign({ _id: userId }, secretKey);
+    return token;
+}
+
 module.exports = {
-    signUp
+    signUp, logIn
 }
