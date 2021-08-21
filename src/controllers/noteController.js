@@ -21,6 +21,19 @@ const deleteNote = async (req, res) => {
     }
 }
 
+const updateNote = async (req, res) => {
+    try {
+        const note = await noteModel.findOneAndUpdate({ _id: req.body.id }, {
+            title: req.body.title,
+            description: req.body.description
+        });
+        await note.save();
+        res.status(200).send({ message: "Note Updated" });
+    } catch (e) {
+        res.send({ message: e.message });
+    }
+}
+
 const getNotes = async (req, res) => {
     try {
         const notes = await noteModel.find({});
@@ -40,5 +53,5 @@ const getNote = async (req, res) => {
 }
 
 module.exports = {
-    createNote, getNotes, deleteNote, getNote
+    createNote, getNotes, deleteNote, getNote, updateNote
 }
