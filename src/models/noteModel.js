@@ -9,6 +9,9 @@ const noteSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+    }
 }, { timestamps: true });
 
 const noteModel = mongoose.model('Note', noteSchema);

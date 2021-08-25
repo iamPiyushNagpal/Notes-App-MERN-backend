@@ -3,7 +3,8 @@ const noteModel = require("../models/noteModel");
 const createNote = async (req, res) => {
     try {
         const note = new noteModel({
-            ...req.body
+            ...req.body,
+            owner: req.user._id
         });
         await note.save();
         res.send({ note, message: "Note Created" });
@@ -36,7 +37,7 @@ const updateNote = async (req, res) => {
 
 const getNotes = async (req, res) => {
     try {
-        const notes = await noteModel.find({});
+        const notes = await noteModel.find({ owner: req.user._id });
         res.send({ notes });
     } catch (e) {
         res.send({ message: e.message });
