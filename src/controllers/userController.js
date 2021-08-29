@@ -19,7 +19,7 @@ const signUp = async (req, res) => {
 
         res.status(201).send({ user, message: "Account Created. Please login" });
     } catch (e) {
-        res.status(400).send({ message: e.message });
+        res.status(500).send({ message: e.message });
     }
 }
 
@@ -27,15 +27,15 @@ const logIn = async (req, res) => {
     try {
         const user = await userModel.findOne({ email: req.body.email });
         if (!user)
-            return res.send({ message: "User not found" });
+            return res.status(404).send({ message: "User not found" });
 
         const checkPassword = await bcrypt.compare(req.body.password, user.password);
         if (!checkPassword)
-            return res.send({ message: "Incorrect Password" });
+            return res.status(403).send({ message: "Incorrect Password" });
         const token = generateAuthToken(user._id);
-        res.send({ token: `Bearer ${token}` });
+        res.status(200).send({ token: `Bearer ${token}` });
     } catch (e) {
-        res.send({ message: e.message });
+        res.status(500).send({ message: e.message });
     }
 }
 
