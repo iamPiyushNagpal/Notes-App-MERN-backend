@@ -15,7 +15,7 @@ const createNote = async (req, res) => {
 
 const deleteNote = async (req, res) => {
     try {
-        const note = await noteModel.findOne({ _id: req.body.id });
+        const note = await noteModel.deleteOne({ _id: req.body.id });
         if (!note)
             return res.status(404).send({ message: "Note not found" });
         res.status(200).send({ message: "Note Deleted" });
